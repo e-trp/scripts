@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
 import tkinter as tk
 import tkinter.filedialog
-from smtplib import SMTP
-import os
+from tkinter import messagebox
+from smtplib import SMTP, SMTPException
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
@@ -12,7 +13,7 @@ from email import encoders
 
 smtp_server='smtp.gmail.com'
 port= 587
-login='pymailbo1@gmail.com'
+login='pymailbo1@gmail.com' # test mail account
 passwrd='Sqwe1456FDgwe'
 
 
@@ -29,23 +30,26 @@ def open_file():
             part.add_header('Content-Disposition',
                         'attachment; filename="{}"'.format(fn))
             msg.attach(part)
-            print(len(label_attach['text']))
             label_attach['text']+=fn+' '
     except FileNotFoundError:
         pass
 
+
 def send_mail(subject, mes_to, mes_body):
-    msg['To'] = mes_to
-    msg['From'] = login
-    msg['Subject'] = subject+'\n\n'
-    msg.attach(MIMEText(mes_body))
-    msmtp = SMTP(smtp_server, port)
-    msmtp.ehlo()
-    msmtp.starttls()
-    msmtp.ehlo()
-    msmtp.login(login, passwrd)
-    msmtp.send_message(msg)
-    msmtp.close()
+    try:
+        msg['To'] = mes_to
+        msg['From'] = login
+        msg['Subject'] = subject+'\n\n'
+        msg.attach(MIMEText(mes_body))
+        msmtp = SMTP(smtp_server, port)
+        msmtp.ehlo()
+        msmtp.starttls()
+        msmtp.ehlo()
+        msmtp.login(login, passwrd)
+        msmtp.send_message(msg)
+        msmtp.close()
+    except SMTPException as ex:
+        messagebox.showerror('Ошибка', 'Сообщение не отправлено')
 
 
 window=tk.Tk()
@@ -72,24 +76,3 @@ edit_mto.place(x=44, y=26)
 edit_subject.place(x=44, y=75)
 btn_ok.place(x=341, y=535)
 window.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
